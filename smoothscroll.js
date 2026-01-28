@@ -5,7 +5,7 @@
     
     // adjust
     const friction = 0.92;   
-    const sensitivity = 0.4;   
+    const sensitivity = 0.1;   
 
     const runScroll = (el) => {
         if (Math.abs(velocity) < 0.1) {
