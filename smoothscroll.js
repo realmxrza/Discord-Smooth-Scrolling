@@ -1,44 +1,52 @@
-//smooth scroll by realmxrza
 (function() {
-    let velocity = 0;
-    let scrolling = false;
-    
-    // adjust
-    const friction = 0.92;   
-    const sensitivity = 0.1;   
 
-    const runScroll = (el) => {
-        if (Math.abs(velocity) < 0.1) {
+    // Adjust here
+
+    const friction = 0.92;
+    const sensitivity = 0.1;   // Scroll speed multiplier
+    
+    let velocity = 0;
+    let isScrolling = false;
+    let activeContainer = null;
+
+    const updateScrollPosition = () => {
+        if (Math.abs(velocity) < 0.1 || !activeContainer) {
             velocity = 0;
-            scrolling = false;
+            isScrolling = false;
             return;
         }
 
-        el.scrollTop += velocity;
+        activeContainer.scrollTop += velocity;
         velocity *= friction;
-        requestAnimationFrame(() => runScroll(el));
+
+        requestAnimationFrame(updateScrollPosition);
     };
 
-    const onWheel = (e) => {
-        const container = e.target.closest('[class*="scrollerBase_"]');
-        if (!container) return;
+    const handleWheelEvent = (event) => {
+        const scroller = event.target.closest('[class*="scrollerBase_"]');
+        
+        if (!scroller) return;
 
-        e.preventDefault();
-        velocity += e.deltaY * sensitivity;
+        event.preventDefault();
 
-        if (!scrolling) {
-            scrolling = true;
-            runScroll(container);
+        if (activeContainer !== scroller) {
+            activeContainer = scroller;
+        }
+
+        velocity += event.deltaY * sensitivity;
+
+        if (!isScrolling) {
+            isScrolling = true;
+            updateScrollPosition();
         }
     };
 
-    // kill
-    if (window.smoothScrollHandler) {
+       if (window.smoothScrollHandler) {
         window.removeEventListener('wheel', window.smoothScrollHandler);
     }
 
-    window.smoothScrollHandler = onWheel;
-    window.addEventListener('wheel', onWheel, { passive: false });
+    window.smoothScrollHandler = handleWheelEvent;
+    window.addEventListener('wheel', handleWheelEvent, { passive: false });
 
-    console.log("Smooth Scroll Enabled");
+    console.log("%c[SmoothScroll]%c v2 by realmxrza enabled", "color: #5865F2; font-weight: bold;", "");
 })();
